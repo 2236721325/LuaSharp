@@ -1,4 +1,6 @@
-﻿namespace LuaGo
+﻿using System.ComponentModel;
+
+namespace LuaGo
 {
     class Lexer
     {
@@ -24,12 +26,9 @@
 
 
         
-        public NextToken()
+        public Token NextToken()
         {
-            switch (switch_on)
-            {
-                default:
-            }
+            throw new NotImplementedException();
         }
 
         private char next()
