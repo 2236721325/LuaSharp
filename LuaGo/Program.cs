@@ -4,7 +4,7 @@
     {
         static void Main(string[] args)
         {
-            var lexer = new Lexer("main", "var a=100 ");
+            Console.WriteLine(Char.IsWhiteSpace('\t'));
         }
     }
 }

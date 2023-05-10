@@ -30,6 +30,16 @@
             {"until",TokenKind. TOKEN_KW_UNTIL},
             {"while",TokenKind. TOKEN_KW_WHILE},
         };
+
+        public static readonly char[] WhiteSpace = new char[]
+        {
+            '\t',
+            '\n',
+            '\v',
+            '\f',
+            '\r',
+            ' ',
+        };
     }
     enum TokenKind
     {
