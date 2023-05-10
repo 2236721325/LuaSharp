@@ -185,13 +185,30 @@ namespace LuaGo
 
         private scanNumber()
         {
+            int idx = 0;
             if (Chunk[0] == '.')
             {
-                next(1);
+                idx++;
+                while (idx < Chunk.Length)
+                {
+                    if (Char.IsDigit(Chunk[idx]))
+                    {
+                    }
+
+                    idx++;
+
+
+                }
             }
-            next(1);
-            
-            string 
+            while (idx < Chunk.Length)
+            {
+                if (Char.IsDigit(Chunk[idx]))
+                {
+                }
+
+                idx++;
+            }
+
         }
         private void skipWhiteSpace()
         {
