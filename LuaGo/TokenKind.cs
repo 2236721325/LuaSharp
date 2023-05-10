@@ -1,5 +1,8 @@
-﻿namespace LuaGo
+﻿using System.Text.Json.Serialization;
+
+namespace LuaGo
 {
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     enum TokenKind
     {
         TOKEN_EOF,              // end-of-file

@@ -168,47 +168,63 @@ namespace LuaGo
                         next(2);
                         return new Token(TokenKind.TOKEN_OP_CONCAT, Line, "..");
                     }
-                    else if (Chunk.Length == 1 || ! Char.IsDigit( Chunk[1]))
+                    else if (Chunk.Length == 1 || !Char.IsDigit(Chunk[1]))
                     {
                         next(1);
                         return new Token(TokenKind.TOKEN_SEP_DOT, Line, ".");
                     }
                     break;
 
-               
-              
+
+
+            }
+            if (Char.IsDigit(Chunk[0])|| Chunk[0]=='0')
+            {
+                return scanNumber();
             }
 
+
+            if (Chunk[0] == '_' || Char.IsLetter(Chunk[0]))
+            {
+                var value= scanIdentifier();
+                if (Constants.keywords.ContainsKey(value))
+                {
+                    return new Token(Constants.keywords[value], Line, value);
+                }
+                else
+                {
+                    return new Token(TokenKind.TOKEN_IDENTIFIER, Line, value);
+                }
+            }
             throw new Exception("not expected!");
         
         }
 
-        private scanNumber()
+
+        private string scanIdentifier()
         {
-            int idx = 0;
-            if (Chunk[0] == '.')
+            return scan(Constants.IdentifierRegexString);
+        }
+        
+
+        private string scan(string regexString)
+        {
+            var regex = new Regex(regexString);
+            var match = regex.Match(Chunk);
+            if (match.Success)
             {
-                idx++;
-                while (idx < Chunk.Length)
-                {
-                    if (Char.IsDigit(Chunk[idx]))
-                    {
-                    }
-
-                    idx++;
-
-
-                }
-            }
-            while (idx < Chunk.Length)
-            {
-                if (Char.IsDigit(Chunk[idx]))
-                {
-                }
-
-                idx++;
+                var value = match.Value;
+                next(value.Length);
+                return value;
             }
 
+            throw new Exception("Unexpected Match");
+        }
+        private Token scanNumber()
+        {
+            var value = scan(Constants.NumberRegexString);
+            return new Token(TokenKind.TOKEN_NUMBER, Line, value);
+         
         }
         private void skipWhiteSpace()
         {
