@@ -15,10 +15,6 @@ namespace LuaGo.Test.CodeAnalyzer
             _Output = output;
         }
 
-
-        
-       
-
         [Theory]
         [InlineData("test1.lua")]
         [InlineData("test2.lua")]

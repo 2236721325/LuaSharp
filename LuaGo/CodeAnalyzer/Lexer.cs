@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace LuaGo
+namespace LuaGo.CodeAnalyzer
 {
     public class Lexer
     {
@@ -33,8 +33,8 @@ namespace LuaGo
 
 
 
-        
-        
+
+
         public Token NextToken()
         {
             if (nextToken != null)
@@ -185,7 +185,7 @@ namespace LuaGo
                         next(2);
                         return new Token(TokenKind.TOKEN_OP_CONCAT, Line, "..");
                     }
-                    else if (Chunk.Length == 1 || !Char.IsDigit(Chunk[1]))
+                    else if (Chunk.Length == 1 || !char.IsDigit(Chunk[1]))
                     {
                         next(1);
                         return new Token(TokenKind.TOKEN_SEP_DOT, Line, ".");
@@ -204,19 +204,20 @@ namespace LuaGo
                         next(1);
                         return new Token(TokenKind.TOKEN_SEP_LBRACK, Line, "[");
                     }
-                case '\'': case '"':
+                case '\'':
+                case '"':
                     return new Token(TokenKind.TOKEN_STRING, Line, scanShortString());
-                    
+
             }
-            if (Char.IsDigit(Chunk[0])|| Chunk[0]=='0')
+            if (char.IsDigit(Chunk[0]) || Chunk[0] == '0')
             {
                 return scanNumber();
             }
 
 
-            if (Chunk[0] == '_' || Char.IsLetter(Chunk[0]))
+            if (Chunk[0] == '_' || char.IsLetter(Chunk[0]))
             {
-                var value= scanIdentifier();
+                var value = scanIdentifier();
                 if (Constants.keywords.ContainsKey(value))
                 {
                     return new Token(Constants.keywords[value], Line, value);
@@ -226,8 +227,8 @@ namespace LuaGo
                     return new Token(TokenKind.TOKEN_IDENTIFIER, Line, value);
                 }
             }
-            throw new ErrorException("not expected!",Line);
-        
+            throw new ErrorException("not expected!", Line);
+
         }
 
         public Token NextTokenOfKind(TokenKind kind)
@@ -235,7 +236,7 @@ namespace LuaGo
             var token = NextToken();
             if (token.Kind != kind)
             {
-                throw new ErrorException($"Unexpected Token kind {token.Kind}! We need Token {token.Kind}",Line);
+                throw new ErrorException($"Unexpected Token kind {token.Kind}! We need Token {token.Kind}", Line);
             }
             return token;
         }
@@ -272,12 +273,12 @@ namespace LuaGo
                 str = str.Substring(1, str.Length - 2);
                 if (str.Contains("\\"))
                 {
-                    Line += Regex.Matches(str,Constants.NewLineRegexString).Count;
+                    Line += Regex.Matches(str, Constants.NewLineRegexString).Count;
                     str = escape(str);
                 }
                 return str;
             }
-            throw new ErrorException("unfinished string",Line);
+            throw new ErrorException("unfinished string", Line);
         }
         public string escape(string str)
         {
@@ -350,7 +351,7 @@ namespace LuaGo
                     case '7':
                     case '8':
                     case '9': // \ddd
-                        string found = Regex.Match(str,Constants.DecEscapeSeqRegexString).Value;
+                        string found = Regex.Match(str, Constants.DecEscapeSeqRegexString).Value;
                         if (found != "")
                         {
                             int d = int.Parse(found.Substring(1), System.Globalization.NumberStyles.Integer);
@@ -360,11 +361,11 @@ namespace LuaGo
                                 str = str.Substring(found.Length);
                                 continue;
                             }
-                            throw new ErrorException($"decimal escape too large near '{found}'",Line);
+                            throw new ErrorException($"decimal escape too large near '{found}'", Line);
                         }
                         break;
                     case 'x': // \xXX
-                        found = Regex.Match(str,Constants.HexEscapeSeqRegexString).Value;
+                        found = Regex.Match(str, Constants.HexEscapeSeqRegexString).Value;
                         if (found != "")
                         {
                             int d = int.Parse(found.Substring(2), System.Globalization.NumberStyles.HexNumber);
@@ -374,7 +375,7 @@ namespace LuaGo
                         }
                         break;
                     case 'u': // \u{XXX}
-                        found = Regex.Match(str,Constants.UnicodeEscapeSeqRegexString).Value;
+                        found = Regex.Match(str, Constants.UnicodeEscapeSeqRegexString).Value;
                         if (found != "")
                         {
                             int d = int.Parse(found.Substring(3, found.Length - 4), System.Globalization.NumberStyles.HexNumber);
@@ -384,7 +385,7 @@ namespace LuaGo
                                 str = str.Substring(found.Length);
                                 continue;
                             }
-                            throw new ErrorException($"UTF-8 value too large near '{found}'",Line);
+                            throw new ErrorException($"UTF-8 value too large near '{found}'", Line);
                         }
                         break;
                     case 'z':
@@ -406,7 +407,7 @@ namespace LuaGo
             string openingLongBracket = new Regex(Constants.OpeningLongBracketRegexString).Match(Chunk).Value;
             if (string.IsNullOrEmpty(openingLongBracket))
             {
-                throw new ErrorException($"invalid long string delimiter near '{Chunk.Substring(0, 2)}'",Line);
+                throw new ErrorException($"invalid long string delimiter near '{Chunk.Substring(0, 2)}'", Line);
             }
 
             string closingLongBracket = openingLongBracket.Replace("[", "]");
@@ -434,7 +435,7 @@ namespace LuaGo
         {
             return scan(Constants.IdentifierRegexString);
         }
-        
+
 
         private string scan(string regexString)
         {
@@ -453,7 +454,7 @@ namespace LuaGo
         {
             var value = scan(Constants.NumberRegexString);
             return new Token(TokenKind.TOKEN_NUMBER, Line, value);
-         
+
         }
         private void skipWhiteSpace()
         {
@@ -486,7 +487,7 @@ namespace LuaGo
 
         private void next(int n)
         {
-            this.Chunk = this.Chunk[n..];
+            Chunk = Chunk[n..];
         }
 
         private bool isWhiteSpace(char c)
@@ -515,7 +516,7 @@ namespace LuaGo
             {
 
                 var openingLongBracket = Regex.Match(Chunk, Constants.OpeningLongBracketRegexString).Value;
-                if (openingLongBracket!="")
+                if (openingLongBracket != "")
                 {
                     scanLongString();
                     return;
@@ -529,7 +530,7 @@ namespace LuaGo
             }
         }
 
-     
+
 
 
 
