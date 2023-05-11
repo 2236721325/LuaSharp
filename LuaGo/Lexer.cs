@@ -439,8 +439,6 @@ namespace LuaGo
             }
         }
 
-
-
         private void next(int n)
         {
             this.Chunk = this.Chunk[n..];
