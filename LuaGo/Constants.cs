@@ -45,7 +45,7 @@ namespace LuaGo
 
         public const string ShortStrRegexString = @"(?s)(^'(\\\\|\\'|\\\n|\\z\s*|[^'\n])*')|(^""(\\\\|\\""|\\\n|\\z\s*|[^""\n])*"")";
 
-        public const string OpeningLongBracketRegexString = @"^\\[=*\\[";
+        public const string OpeningLongBracketRegexString = @"^\[=＊\[";
         public const string DecEscapeSeqRegexString = @"^\\[0 - 9]{1,3}";
         public const string HexEscapeSeqRegexString = @"^\\x[0 - 9a - fA - F]{2}";
         public const string UnicodeEscapeSeqRegexString = @"^\\u\{[0 - 9a - fA - F] +\}";

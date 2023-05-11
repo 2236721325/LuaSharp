@@ -16,20 +16,17 @@ namespace LuaGo.Test.CodeAnalyzer
         }
 
 
-        [Fact]
-        public void BasicTest()
+        
+       
+
+        [Theory]
+        [InlineData("test1.lua")]
+        [InlineData("test2.lua")]
+        [InlineData("test3.lua")]
+        public void SingleTest(string file_name)
         {
-            var codes=Directory.GetFiles("LuaTestCode");
-
-            foreach(var code in codes)
-            {
-                SingleTest(code);
-            }
-
-        }
-
-        private void SingleTest(string file_path)
-        {
+            var root_path = Directory.GetCurrentDirectory();
+            var file_path=Path.Combine(root_path,"LuaTestCode", file_name);
             var code=File.ReadAllText(file_path);
             var lexer = new Lexer("main", code);
             var tokens = new List<Token>();

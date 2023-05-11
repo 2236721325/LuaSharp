@@ -470,13 +470,12 @@ namespace LuaGo
             next(2);
             if (Chunk.StartsWith("["))
             {
-                var reOpeningLongBracket = new Regex(@"^\[=*\[");
-                var reClosingLongBracket = new Regex(@"^]=*\]");
-                var openingLongBracket = reOpeningLongBracket.Match(Chunk);
-                if (openingLongBracket.Success)
+
+                var openingLongBracket = Regex.Match(Chunk, Constants.OpeningLongBracketRegexString).Value;
+                if (openingLongBracket!="")
                 {
-                    return;
                     scanLongString();
+                    return;
                 }
             }
 
