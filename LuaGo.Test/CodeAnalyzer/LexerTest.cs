@@ -35,8 +35,6 @@ namespace LuaGo.Test.CodeAnalyzer
             {
                 var token = lexer.NextToken();
                 tokens.Add(token);
-
-
                 if (token.Kind == TokenKind.TOKEN_EOF)
                 {
                     break;
