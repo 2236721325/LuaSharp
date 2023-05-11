@@ -2,7 +2,7 @@
 
 namespace LuaGo
 {
-    class Constants
+    public class Constants
     {
 
         public static readonly Dictionary<string, TokenKind> keywords = new()
@@ -42,5 +42,15 @@ namespace LuaGo
         };
         public const string NumberRegexString = @"^0[xX][0-9a-fA-F]*(\.[0-9a-fA-F]*)?([pP][+\-]?[0-9]+)?|^[0-9]*(\.[0-9]*)?([eE][+\-]?[0-9]+)?";
         public const string IdentifierRegexString = @"^[_\d\w]+";
+
+        public const string ShortStrRegexString = @"(?s)(^'(\\\\|\\'|\\\n|\\z\s*|[^'\n])*')|(^""(\\\\|\\""|\\\n|\\z\s*|[^""\n])*"")";
+
+        public const string OpeningLongBracketRegexString = @"^\\[=*\\[";
+        public const string DecEscapeSeqRegexString = @"^\\[0 - 9]{1,3}";
+        public const string HexEscapeSeqRegexString = @"^\\x[0 - 9a - fA - F]{2}";
+        public const string UnicodeEscapeSeqRegexString = @"^\\u\{[0 - 9a - fA - F] +\}";
+
+        public const string NewLineRegexString= "\r\n|\n\r|\n|\r";
+
     }
 }

@@ -1,12 +1,39 @@
-﻿using System.Text.Json;
+﻿using Serilog;
+using System.Text.Json;
 
 namespace LuaGo
 {
-    internal class Program
+    public class Program
     {
+        static void ConfigureLog()
+        {
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.Console()
+                .CreateLogger();
+        }
         static void Main(string[] args)
         {
-            var chunk = "a = 5133132.313               -- 全局变量\r\nlocal b = 5         -- 局部变量\r\n\r\nfunction joke()\r\n    c = 5           -- 全局变量\r\n    local d = 6     -- 局部变量\r\nend\r\n\r\njoke()\r\nprint(c,d)          --> 5 nil\r\n\r\ndo\r\n    local a = 6     -- 局部变量\r\n    b = 6           -- 对局部变量重新赋值\r\n    print(a,b);     --> 6 6\r\nend\r\n\r\nprint(a,b)      --> 5 6";
+            ConfigureLog();
+            var chunk = @"array = {""Google"", ""Runoob""}
+
+function elementIterator (collection)
+   local index = 0
+   local count = #collection
+   -- 闭包函数
+   return function ()
+      index = index + 1
+      if index <= count
+      then
+         --  返回迭代器的当前元素
+         return collection[index]
+      end
+   end
+end
+
+for element in elementIterator(array)
+do
+   print(element)
+end";
             var lexer = new Lexer("main", chunk);
             while (true)
             {

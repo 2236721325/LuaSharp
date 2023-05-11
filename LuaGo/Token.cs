@@ -1,6 +1,6 @@
 ﻿namespace LuaGo
 {
-    class Token
+    public class Token
     {
         public TokenKind Kind { get; set; }
         public int Line { get; set; }

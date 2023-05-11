@@ -3,7 +3,7 @@
 namespace LuaGo
 {
     [JsonConverter(typeof(JsonStringEnumConverter))]
-    enum TokenKind
+    public enum TokenKind
     {
         TOKEN_EOF,              // end-of-file
         TOKEN_VARARG,           // ...
