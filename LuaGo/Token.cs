@@ -6,6 +6,8 @@
         public int Line { get; set; }
         public string? Value { get; set; }
 
+
+
         public Token( TokenKind kind, int line, string? value)
         {
             Value = value;

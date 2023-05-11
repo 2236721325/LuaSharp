@@ -19,6 +19,11 @@ namespace LuaGo
         /// </summary>
         public int Line { get; set; }
 
+
+
+        private Token? nextToken = null;
+
+
         public Lexer(string chunkName, string chunk)
         {
             ChunkName = chunkName;
@@ -28,8 +33,17 @@ namespace LuaGo
 
 
 
+        
+        
         public Token NextToken()
         {
+            if (nextToken != null)
+            {
+                Line = nextToken.Line;
+                var result = nextToken;
+                nextToken = null;
+                return result;
+            }
             skipWhiteSpace();
             if (Chunk.Length == 0)
             {
@@ -215,6 +229,37 @@ namespace LuaGo
             throw new ErrorException("not expected!",Line);
         
         }
+
+        public Token NextTokenOfKind(TokenKind kind)
+        {
+            var token = NextToken();
+            if (token.Kind != kind)
+            {
+                throw new ErrorException($"Unexpected Token kind {token.Kind}! We need Token {token.Kind}",Line);
+            }
+            return token;
+        }
+        public Token NextIdentifier()
+        {
+            return NextTokenOfKind(TokenKind.TOKEN_IDENTIFIER);
+        }
+
+        /// <summary>
+        /// look next token and store it！
+        /// </summary>
+        /// <returns></returns>
+        public Token LookAhead()
+        {
+            if (nextToken != null)
+            {
+                return nextToken;
+            }
+            var currentLine = Line;
+            nextToken = NextToken();
+            Line = currentLine;
+            return nextToken;
+        }
+
 
         private string scanShortString()
         {

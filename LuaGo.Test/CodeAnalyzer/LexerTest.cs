@@ -23,6 +23,7 @@ namespace LuaGo.Test.CodeAnalyzer
         [InlineData("test1.lua")]
         [InlineData("test2.lua")]
         [InlineData("test3.lua")]
+        [InlineData("test4.lua")]
         public void SingleTest(string file_name)
         {
             var root_path = Directory.GetCurrentDirectory();
