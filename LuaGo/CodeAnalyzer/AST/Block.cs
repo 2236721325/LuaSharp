@@ -1,4 +1,4 @@
-﻿using LuaGo.CodeAnalyzer.AST.Expressionressions;
+﻿using LuaGo.CodeAnalyzer.AST.Expressions;
 using LuaGo.CodeAnalyzer.AST.Statements;
 using System;
 using System.Collections.Generic;

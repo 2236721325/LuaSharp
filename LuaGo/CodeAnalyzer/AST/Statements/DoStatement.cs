@@ -5,6 +5,10 @@
     {
         public Block Block { get; set; }
 
+        public DoStatement(Block block)
+        {
+            Block = block;
+        }
     }
 
 }

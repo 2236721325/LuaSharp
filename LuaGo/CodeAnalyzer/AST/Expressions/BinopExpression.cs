@@ -1,4 +1,4 @@
-﻿namespace LuaGo.CodeAnalyzer.AST.Expressionressions
+﻿namespace LuaGo.CodeAnalyzer.AST.Expressions
 {
     // 定义 BinopExpression 类型
     public class BinopExpression : Expression

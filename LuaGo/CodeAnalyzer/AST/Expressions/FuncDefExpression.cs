@@ -1,4 +1,4 @@
-﻿namespace LuaGo.CodeAnalyzer.AST.Expressionressions
+﻿namespace LuaGo.CodeAnalyzer.AST.Expressions
 {
     // 定义 FuncDefExpression 类型
     public class FuncDefExpression : Expression

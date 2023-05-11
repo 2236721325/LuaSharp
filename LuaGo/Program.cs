@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using LuaGo.CodeAnalyzer;
+using Serilog;
 using System.Text.Json;
 
 namespace LuaGo

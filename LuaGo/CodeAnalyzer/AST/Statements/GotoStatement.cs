@@ -5,7 +5,10 @@
     {
         public string Name { get; set; }
 
-
+        public GotoStatement(string name)
+        {
+            Name = name;
+        }
     }
 
 }

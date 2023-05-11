@@ -1,7 +1,7 @@
 ﻿
+using LuaGo.CodeAnalyzer;
 using System.Text.Json;
 using Xunit.Abstractions;
-using Xunit.Sdk;
 
 namespace LuaGo.Test.CodeAnalyzer
 {

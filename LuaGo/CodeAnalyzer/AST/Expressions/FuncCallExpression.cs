@@ -1,7 +1,7 @@
-﻿namespace LuaGo.CodeAnalyzer.AST.Expressionressions
+﻿namespace LuaGo.CodeAnalyzer.AST.Expressions
 {
     // 定义 FuncCallExpression 类型
-    public class FuncCallExpression :Expression
+    public class FuncCallExpression : Expression
     {
         public int Line { get; set; }
         public int LastLine { get; set; }
