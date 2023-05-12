@@ -1,14 +1,15 @@
 ﻿
-using LuaGo.CodeAnalyzer.AST.Expressionressions;
+
+using LuaGo.CodeAnalyzer.AST.Expressions;
 
 namespace LuaGo.CodeAnalyzer.AST.Statements
 {
-    public class RepeatStatement : Statement
+    public class RepeatStatement : IStatement
     {
-        public Expression ConditionExpression { get; set; }
+        public IExpression ConditionExpression { get; set; }
         public Block Block { get; set; }
 
-        public RepeatStatement(Block block, Expression conditionExpression)
+        public RepeatStatement(Block block, IExpression conditionExpression)
         {
             Block = block;
             ConditionExpression = conditionExpression;

@@ -2,10 +2,17 @@
 
 namespace LuaGo.CodeAnalyzer.AST.Statements
 {
-    public class LocalFunctionDefineStatement:Statement
+    public class LocalFunctionDefineStatement:IStatement
     {
         public string Name { get; set; }
 
-        public FunctionDefineExpression Expression { get; set; }
+        public LocalFunctionDefineStatement(string name, FuncDefExpression funcDefExpression)
+        {
+            Name = name;
+            FuncDefExpression= funcDefExpression;
+        }
+
+        public FuncDefExpression FuncDefExpression { get; set; }
+        
     }
 }

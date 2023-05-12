@@ -11,15 +11,15 @@ namespace LuaGo.CodeAnalyzer.AST
     public class Block
     {
         public int LastLine { get; set; }
-        public List<Statement> StatementList { get; set; }
+        public List<IStatement> StatementList { get; set; }
 
-        public Block(List<Statement> statementList, List<Expression> returnExpression, int lastLine)
+        public Block(List<IStatement> statementList, List<IExpression>? returnExpression, int lastLine)
         {
             StatementList = statementList;
             ReturnExpression = returnExpression;
             LastLine = lastLine;
         }
 
-        public List<Expression> ReturnExpression { get; set; }
+        public List<IExpression>? ReturnExpression { get; set; }
     }
 }

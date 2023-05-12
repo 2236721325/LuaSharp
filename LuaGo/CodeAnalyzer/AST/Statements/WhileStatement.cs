@@ -1,14 +1,14 @@
 ﻿
-using LuaGo.CodeAnalyzer.AST.Expressionressions;
+using LuaGo.CodeAnalyzer.AST.Expressions;
 
 namespace LuaGo.CodeAnalyzer.AST.Statements
 {
-    public class WhileStatement:Statement
+    public class WhileStatement:IStatement
     {
-        public Expression ConditionExpression { get; set; }
+        public IExpression ConditionExpression { get; set; }
         public Block Block { get; set; }
 
-        public WhileStatement(Block block, Expression conditionExpression)
+        public WhileStatement(Block block, IExpression conditionExpression)
         {
             Block = block;
             ConditionExpression = conditionExpression;

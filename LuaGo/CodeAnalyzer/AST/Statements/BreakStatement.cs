@@ -3,7 +3,7 @@
     /// <summary>
     /// break
     /// </summary>
-    public class BreakStatement : Statement
+    public class BreakStatement : IStatement
     {
         public int Line { get; set; }
 

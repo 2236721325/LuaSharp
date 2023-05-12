@@ -1,7 +1,7 @@
 ﻿namespace LuaGo.CodeAnalyzer.AST.Expressions
 {
     // 定义 NilExpressionression 类型
-    public class NilExpression : Expression
+    public class NilExpression : IExpression
     {
         public int Line { get; set; }
     }

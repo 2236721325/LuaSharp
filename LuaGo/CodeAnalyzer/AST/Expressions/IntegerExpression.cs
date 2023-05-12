@@ -1,7 +1,7 @@
 ﻿namespace LuaGo.CodeAnalyzer.AST.Expressions
 {
     // 定义 IntegerExpression 类型
-    public class IntegerExpression : Expression
+    public class IntegerExpression : IExpression
     {
         public int Line { get; set; }
 

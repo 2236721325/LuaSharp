@@ -1,8 +1,9 @@
-﻿namespace LuaGo.CodeAnalyzer.AST.Statements
-{
-    // 定义类型 FuncCallStat
-    public class FunctionCallStatement : Statement
-    {
-    }
+﻿using LuaGo.CodeAnalyzer.AST.Expressions;
 
+namespace LuaGo.CodeAnalyzer.AST.Statements
+{
+    public class FunctionCallStatement : FunctionCallExpression
+    {
+
+    }
 }

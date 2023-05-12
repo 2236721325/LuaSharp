@@ -1,6 +1,7 @@
 ﻿using LuaGo.CodeAnalyzer.AST;
 using LuaGo.CodeAnalyzer.AST.Expressions;
 using LuaGo.CodeAnalyzer.AST.Statements;
+using LuaGo.Exceptions;
 
 namespace LuaGo.CodeAnalyzer
 {
@@ -23,56 +24,21 @@ namespace LuaGo.CodeAnalyzer
                 
         }
 
-        private List<Expression> parseReturnExpressions()
-        {
-            if (lexer.LookAhead().Kind != TokenKind.TOKEN_KW_RETURN)
-            {
-                return null;
-            }
-            lexer.NextToken();
-            switch (lexer.LookAhead().Kind)
-            {
-                case TokenKind.TOKEN_EOF:
-                case TokenKind.TOKEN_KW_END:
-                case TokenKind.TOKEN_KW_ELSE:
-                case TokenKind.TOKEN_KW_ELSEIF:
-                case TokenKind.TOKEN_KW_UNTIL:
-                    return new List<Expression>(0);
-                case TokenKind.TOKEN_SEP_SEMI:
-                    lexer.NextToken();
-                    return new List<Expression>(0);
-                default:
-                    var expressionList = parseExpressions();
-                    if (lexer.LookAhead().Kind== TokenKind.TOKEN_SEP_SEMI)
-                    {
-                        lexer.NextToken();
-                    }
-                    return expressionList;
-            }
-        }
 
-        private List<Expression> parseExpressions()
-        {
-            var expressionList = new List<Expression>();
-            expressionList.Add(parseExpression());
-            while (lexer.LookAhead().Kind==TokenKind.TOKEN_SEP_COMMA)
-            {
-                lexer.NextToken();
-                expressionList.Add(parseExpression());
-            }
-            return expressionList;
-        }
 
-     
 
-        private List<Statement> parseStatements()
+
+
+
+        #region Statement parse function
+        private List<IStatement> parseStatements()
         {
-            var statements = new List<Statement>();
+            var statements = new List<IStatement>();
 
             while (!isReturnOrBlockEnd(lexer.LookAhead()))
             {
                 var statement = parseStatement();
-                if(statement is not EmptyStatement)
+                if (statement is not EmptyStatement)
                 {
                     statements.Add(statement);
                 }
@@ -80,25 +46,8 @@ namespace LuaGo.CodeAnalyzer
             return statements;
         }
 
-        private bool isReturnOrBlockEnd(Token token)
-        {
-            switch (token.Kind)
-            {
-                case TokenKind.TOKEN_EOF:
-                case TokenKind.TOKEN_KW_RETURN:
-                case TokenKind.TOKEN_KW_END:
-                case TokenKind.TOKEN_KW_ELSE:
-                case TokenKind.TOKEN_KW_ELSEIF:
-                case TokenKind.TOKEN_KW_UNTIL:
-                    return true;
 
-
-                default:
-                    return false;
-            }
-        }
-
-        private Statement parseStatement()
+        private IStatement parseStatement()
         {
             switch (lexer.LookAhead().Kind)
             {
@@ -129,34 +78,104 @@ namespace LuaGo.CodeAnalyzer
             }
         }
 
-
-        #region single statement parse function
-
-
-        private Statement parseAssignOrFuncCallStatement()
+        private IStatement parseAssignOrFuncCallStatement()
         {
-            throw new NotImplementedException();
+            
+            var prefixExp = parsePrefixExpression();
+            if (prefixExp is FunctionCallExpression  fc)
+            {
+                return fc;
+            }
+            else
+            {
+                return parseAssignStatement(prefixExp);
+            }
         }
 
-        private Statement parseLocalAssignOrFuncDefStatement()
+        private IStatement parseAssignStatement(IExpression var0)
         {
-            throw new NotImplementedException();
+            var varList = finishVarList(var0);
+            lexer.NextTokenOfKind(TokenKind.TOKEN_OP_ASSIGN);
+            var expList = parseExpressions();
+            var lastLine = lexer.Line;
+            return new AssignStatement(lastLine, varList, expList);
         }
 
-        private Statement parseFuncDefStatement()
+
+
+
+        private IStatement finishLocalVarDeclStatement()
         {
-            throw new NotImplementedException();
+            var name0 = lexer.NextIdentifier().Value!;
+            var nameList = finishNameList(name0);
+
+            List<IExpression>? expressionList = null;
+            if (lexer.LookAhead().Kind == TokenKind.TOKEN_OP_ASSIGN)
+            {
+                lexer.NextToken();
+                expressionList = parseExpressions();
+            }
+            var lastLine = lexer.Line;
+            return new LocalVarDeclareStatement(lastLine, nameList,expressionList);
+        }
+
+        private IStatement finishLocalFucDefStatement()
+        {
+            lexer.NextTokenOfKind(TokenKind.TOKEN_KW_FUNCTION);
+            var name=lexer.NextIdentifier().Value!;
+            var fdExp = parseFuncDefExpression();//function body
+            return new LocalFunctionDefineStatement(name, fdExp);
+
+            
         }
 
 
-        private Statement finishForNumStatement(int lineOfFor,string identifierName)
+
+        private IStatement parseLocalAssignOrFuncDefStatement()
+        {
+            lexer.NextTokenOfKind(TokenKind.TOKEN_KW_LOCAL);
+
+            if (lexer.LookAhead().Kind == TokenKind.TOKEN_KW_FUNCTION)
+            {
+                return finishLocalFucDefStatement();
+            }
+            else
+            {
+                return finishLocalVarDeclStatement();
+            }
+        }
+
+       
+
+        private AssignStatement parseFuncDefStatement()
+        {
+            lexer.NextTokenOfKind(TokenKind.TOKEN_KW_FUNCTION);
+            var fnExp = parseFuncName(out bool hasColon);
+            var fdExp = parseFuncDefExpression();
+            if (hasColon)
+            {
+                fdExp.ParList.Add("");
+                fdExp.ParList.InsertRange(1, fdExp.ParList);
+                fdExp.ParList.Insert(0, "self");
+
+            }
+            return new AssignStatement(
+                fdExp.Line,
+                new List<IExpression>() { fnExp },
+                new List<IExpression> { fdExp }
+                );
+
+        }
+
+
+        private IStatement finishForNumStatement(int lineOfFor,string identifierName)
         {
             lexer.NextTokenOfKind(TokenKind.TOKEN_OP_ASSIGN);
             var initExp = parseExpression();
             lexer.NextTokenOfKind(TokenKind.TOKEN_SEP_COMMA);
             var limitExp = parseExpression();
             lexer.NextTokenOfKind(TokenKind.TOKEN_SEP_COMMA);
-            Expression stepExp;
+            IExpression stepExp;
             if (lexer.LookAhead().Kind == TokenKind.TOKEN_SEP_COMMA)
             {
                 lexer.NextToken();
@@ -171,11 +190,20 @@ namespace LuaGo.CodeAnalyzer
             lexer.NextTokenOfKind(TokenKind.TOKEN_KW_END);
             return new ForNumStatement(lineOfFor, lineOfDo, identifierName, initExp, limitExp, stepExp, block);
         }
-        private Statement finishForInStatement(string identifierName)
+        private IStatement finishForInStatement(string name0)
         {
+            var nameList = finishNameList(name0);
+            lexer.NextTokenOfKind(TokenKind.TOKEN_KW_IN);
+            var expList = parseExpressions();
+            var lineOfDo = lexer.NextTokenOfKind(TokenKind.TOKEN_KW_DO).Line;
+            var block = parseBlock();
+            lexer.NextTokenOfKind(TokenKind.TOKEN_KW_END);
+            return new ForInStatement(lineOfDo, nameList, expList, block);
 
         }
-        private Statement parseForStatement()
+
+
+        private IStatement parseForStatement()
         {
             var forToken = lexer.NextTokenOfKind(TokenKind.TOKEN_KW_FOR);
             var identifierName = lexer.NextIdentifier().Value!;
@@ -189,9 +217,9 @@ namespace LuaGo.CodeAnalyzer
             }
         }
 
-        private Statement parseIfStatement()
+        private IStatement parseIfStatement()
         {
-            var conditions = new List<Expression>();
+            var conditions = new List<IExpression>();
             var blocks = new List<Block>();
             lexer.NextTokenOfKind(TokenKind.TOKEN_KW_IF);
             conditions.Add(parseExpression());
@@ -215,7 +243,7 @@ namespace LuaGo.CodeAnalyzer
             return new IfStatement(blocks,conditions);
         }
 
-        private Statement parseRepeatStatement()
+        private IStatement parseRepeatStatement()
         {
             lexer.NextTokenOfKind(TokenKind.TOKEN_KW_REPEAT);
             var block = parseBlock();
@@ -224,7 +252,7 @@ namespace LuaGo.CodeAnalyzer
             return new RepeatStatement(block,condition);
         }
 
-        private Statement parseWhileStatement()
+        private IStatement parseWhileStatement()
         {
             lexer.NextTokenOfKind(TokenKind.TOKEN_KW_WHILE);
             var condition = parseExpression();
@@ -234,7 +262,7 @@ namespace LuaGo.CodeAnalyzer
             return new WhileStatement(block, condition);
         }
 
-        private Statement parseDoStatement()
+        private IStatement parseDoStatement()
         {
             lexer.NextTokenOfKind(TokenKind.TOKEN_KW_DO);
             var block=parseBlock();
@@ -242,41 +270,179 @@ namespace LuaGo.CodeAnalyzer
             return new DoStatement(block);
         }
 
-        private Statement parseGotoStatement()
+        private IStatement parseGotoStatement()
         {
             lexer.NextTokenOfKind(TokenKind.TOKEN_KW_GOTO);
             var nameToken = lexer.NextIdentifier();
 
-            return new GotoStatement(nameToken.Value);
+            return new GotoStatement(nameToken.Value!);
         }
 
-        private Statement parseLabelStatement()
+        private IStatement parseLabelStatement()
         {
             lexer.NextTokenOfKind(TokenKind.TOKEN_SEP_LABEL);
             var nameToken = lexer.NextIdentifier();
             lexer.NextTokenOfKind(TokenKind.TOKEN_SEP_LABEL);
-            return new LabelStatement(nameToken.Value);
+            return new LabelStatement(nameToken.Value!);
         }
 
-        private Statement parseBreakStatement()
+        private IStatement parseBreakStatement()
         {
             lexer.NextTokenOfKind(TokenKind.TOKEN_KW_BREAK);
             return new BreakStatement(lexer.Line);
         }
 
-        private Statement parseEmptyStatement()
+        private IStatement parseEmptyStatement()
         {
             lexer.NextTokenOfKind(TokenKind.TOKEN_SEP_SEMI);
             return new EmptyStatement();
         }
-    
-        private Expression parseExpression()
+
+
+
+        #endregion
+
+        #region Expression parse fuction
+        private IExpression parseExpression()
         {
             throw new NotImplementedException();
         }
 
 
+        private List<IExpression>? parseReturnExpressions()
+        {
+            if (lexer.LookAhead().Kind != TokenKind.TOKEN_KW_RETURN)
+            {
+                return null;
+            }
+            lexer.NextToken();
+            switch (lexer.LookAhead().Kind)
+            {
+                case TokenKind.TOKEN_EOF:
+                case TokenKind.TOKEN_KW_END:
+                case TokenKind.TOKEN_KW_ELSE:
+                case TokenKind.TOKEN_KW_ELSEIF:
+                case TokenKind.TOKEN_KW_UNTIL:
+                    return new List<IExpression>(0);
+                case TokenKind.TOKEN_SEP_SEMI:
+                    lexer.NextToken();
+                    return new List<IExpression>(0);
+                default:
+                    var expressionList = parseExpressions();
+                    if (lexer.LookAhead().Kind == TokenKind.TOKEN_SEP_SEMI)
+                    {
+                        lexer.NextToken();
+                    }
+                    return expressionList;
+            }
+        }
+
+        private List<IExpression> parseExpressions()
+        {
+            var expressionList = new List<IExpression>();
+            expressionList.Add(parseExpression());
+            while (lexer.LookAhead().Kind == TokenKind.TOKEN_SEP_COMMA)
+            {
+                lexer.NextToken();
+                expressionList.Add(parseExpression());
+            }
+            return expressionList;
+        }
+        private IExpression parsePrefixExpression()
+        {
+            throw new NotImplementedException();
+        }
+        private List<IExpression> finishVarList(IExpression var0)
+        {
+            var vars = new List<IExpression>
+            {
+                checkVar(var0)
+            };
+            while (lexer.LookAhead().Kind == TokenKind.TOKEN_SEP_COMMA)
+            {
+                lexer.NextToken();
+                var exp = parsePrefixExpression();
+                vars.Add(checkVar(exp));
+            }
+            return vars;
+        }
+        private IExpression checkVar(IExpression exp)
+        {
+            switch (exp)
+            {
+                case NameExpression _:
+                case TableAccessExpression _:
+                    return exp;
+                default:
+                    break;
+            }
+            throw new ErrorException("checkVar Failed !", lexer.Line);
+        }
+        private IExpression parseFuncName(out bool hasColon)
+        {
+            hasColon = false;
+            var nameToken = lexer.NextIdentifier();
+            IExpression exp = new NameExpression(nameToken.Value!, nameToken.Line);
+            while (lexer.LookAhead().Kind == TokenKind.TOKEN_SEP_DOT)
+            {
+                lexer.NextToken();
+                nameToken = lexer.NextIdentifier();
+                var idx = new StringExpression(nameToken.Value!, nameToken.Line);
+                exp = new TableAccessExpression(nameToken.Line, exp, idx);
+
+            }
+            if (lexer.LookAhead().Kind == TokenKind.TOKEN_SEP_COLON)
+            {
+                lexer.NextToken();
+                nameToken = lexer.NextIdentifier();
+                var idx = new StringExpression(nameToken.Value!, nameToken.Line);
+                exp = new TableAccessExpression(nameToken.Line, exp, idx);
+                hasColon = true;
+            }
+            return exp;
+        }
+
+        private FuncDefExpression parseFuncDefExpression()
+        {
+
+        }
+
+
         #endregion
 
+        #region Utility
+        private bool isReturnOrBlockEnd(Token token)
+        {
+            switch (token.Kind)
+            {
+                case TokenKind.TOKEN_EOF:
+                case TokenKind.TOKEN_KW_RETURN:
+                case TokenKind.TOKEN_KW_END:
+                case TokenKind.TOKEN_KW_ELSE:
+                case TokenKind.TOKEN_KW_ELSEIF:
+                case TokenKind.TOKEN_KW_UNTIL:
+                    return true;
+
+
+                default:
+                    return false;
+            }
+        }
+    
+        private List<string> finishNameList(string name0)
+        {
+            var nameList = new List<string>
+            {
+                name0
+            };
+            while (lexer.LookAhead().Kind == TokenKind.TOKEN_SEP_COMMA)
+            {
+                lexer.NextToken();
+                nameList.Add(lexer.NextIdentifier().Value!);
+            }
+            return nameList;
+        }
+
+        #endregion
     }
 }

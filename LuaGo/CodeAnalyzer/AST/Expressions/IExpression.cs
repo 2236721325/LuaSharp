@@ -3,7 +3,7 @@
     /// <summary>
     /// 表达式可以求值
     /// </summary>
-    public class Expression
+    public interface IExpression
     {
 
     }

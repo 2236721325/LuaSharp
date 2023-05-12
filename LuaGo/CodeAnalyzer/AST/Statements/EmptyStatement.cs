@@ -3,7 +3,7 @@
     /// <summary>
     ///  ;
     /// </summary>
-    public class EmptyStatement : Statement
+    public class EmptyStatement : IStatement
     {
 
     }

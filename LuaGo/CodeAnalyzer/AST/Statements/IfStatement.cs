@@ -2,13 +2,13 @@
 
 namespace LuaGo.CodeAnalyzer.AST.Statements
 {
-    public class IfStatement : Statement
+    public class IfStatement : IStatement
     {
-        public List<Expression> Expressions { get; set; }
+        public List<IExpression> Expressions { get; set; }
 
         public List<Block> Blocks { get; set; }
 
-        public IfStatement(List<Block> blocks, List<Expression> expressions)
+        public IfStatement(List<Block> blocks, List<IExpression> expressions)
         {
             Blocks = blocks;
             Expressions = expressions;

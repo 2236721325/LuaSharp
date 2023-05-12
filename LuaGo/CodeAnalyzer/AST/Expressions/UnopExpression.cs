@@ -1,10 +1,10 @@
 ﻿namespace LuaGo.CodeAnalyzer.AST.Expressions
 {
     // 定义 UnopExpression 类型
-    public class UnopExpression : Expression
+    public class UnopExpression : IExpression
     {
         public int Line { get; set; }
         public int Op { get; set; }
-        public Expression Expression { get; set; }
+        public IExpression Expression { get; set; }
     }
 }

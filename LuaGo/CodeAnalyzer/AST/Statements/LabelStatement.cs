@@ -1,7 +1,7 @@
 ﻿namespace LuaGo.CodeAnalyzer.AST.Statements
 {
     // 定义类型 LabelStat
-    public class LabelStatement : Statement
+    public class LabelStatement : IStatement
     {
         public LabelStatement(string name)
         {
