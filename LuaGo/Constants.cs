@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using LuaGo.CodeAnalyzer;
 
 namespace LuaGo
 {
@@ -42,7 +43,7 @@ namespace LuaGo
         };
 
 
-
+        // Make it easy with regular expression
         public const string NumberRegexString = @"^0[xX][0-9a-fA-F]*(\.[0-9a-fA-F]*)?([pP][+\-]?[0-9]+)?|^[0-9]*(\.[0-9]*)?([eE][+\-]?[0-9]+)?";
         public const string IdentifierRegexString = @"^[_\d\w]+";
 

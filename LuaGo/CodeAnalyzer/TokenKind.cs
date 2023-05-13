@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace LuaGo
+namespace LuaGo.CodeAnalyzer
 {
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum TokenKind
@@ -8,7 +8,7 @@ namespace LuaGo
         TOKEN_EOF,              // end-of-file
         TOKEN_VARARG,           // ...
         TOKEN_SEP_SEMI,         // ;
-        TOKEN_SEP_COMMA,        // ,
+        TOKEN_SEP_COMMA,        // ,ss
         TOKEN_SEP_DOT,          // .
         TOKEN_SEP_COLON,        // :
         TOKEN_SEP_LABEL,        // ::

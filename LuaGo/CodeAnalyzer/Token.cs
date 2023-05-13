@@ -1,4 +1,4 @@
-﻿namespace LuaGo
+﻿namespace LuaGo.CodeAnalyzer
 {
     public class Token
     {
@@ -8,7 +8,7 @@
 
 
 
-        public Token( TokenKind kind, int line, string? value)
+        public Token(TokenKind kind, int line, string? value)
         {
             Value = value;
             Line = line;

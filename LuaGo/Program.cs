@@ -15,8 +15,9 @@ namespace LuaGo
         static void Main(string[] args)
         {
             ConfigureLog();
-            var chunk = @"array = {""Google"", ""Runoob""}
-
+            Log.Information("Test Started.");
+            var chunk = @"
+array = {""Google"", ""Runoob""}
 function elementIterator (collection)
    local index = 0
    local count = #collection
@@ -49,6 +50,8 @@ end";
                     break;
                 }
             }
+            Log.Information("Test over.");
+
         }
     }
 }

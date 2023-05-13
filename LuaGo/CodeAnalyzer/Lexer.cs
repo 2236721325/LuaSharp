@@ -227,7 +227,7 @@ namespace LuaGo.CodeAnalyzer
                     return new Token(TokenKind.TOKEN_IDENTIFIER, Line, value);
                 }
             }
-            throw new ErrorException("not expected!", Line);
+            throw new SyntaxException("not expected!", Line);
 
         }
 
@@ -236,7 +236,7 @@ namespace LuaGo.CodeAnalyzer
             var token = NextToken();
             if (token.Kind != kind)
             {
-                throw new ErrorException($"Unexpected Token kind {token.Kind}! We need Token {token.Kind}", Line);
+                throw new SyntaxException($"Unexpected Token kind {token.Kind}! We need Token {token.Kind}", Line);
             }
             return token;
         }
@@ -278,7 +278,7 @@ namespace LuaGo.CodeAnalyzer
                 }
                 return str;
             }
-            throw new ErrorException("unfinished string", Line);
+            throw new SyntaxException("unfinished string", Line);
         }
         public string Escape(string str)
         {
@@ -295,7 +295,7 @@ namespace LuaGo.CodeAnalyzer
 
                 if (str.Length == 1)
                 {
-                    throw new ErrorException("unfinished string", Line);
+                    throw new SyntaxException("unfinished string", Line);
                 }
 
                 switch (str[1])
@@ -361,7 +361,7 @@ namespace LuaGo.CodeAnalyzer
                                 str = str.Substring(found.Length);
                                 continue;
                             }
-                            throw new ErrorException($"decimal escape too large near '{found}'", Line);
+                            throw new SyntaxException($"decimal escape too large near '{found}'", Line);
                         }
                         break;
                     case 'x': // \xXX
@@ -385,7 +385,7 @@ namespace LuaGo.CodeAnalyzer
                                 str = str.Substring(found.Length);
                                 continue;
                             }
-                            throw new ErrorException($"UTF-8 value too large near '{found}'", Line);
+                            throw new SyntaxException($"UTF-8 value too large near '{found}'", Line);
                         }
                         break;
                     case 'z':
@@ -396,7 +396,7 @@ namespace LuaGo.CodeAnalyzer
                         }
                         continue;
                 }
-                throw new ErrorException($"invalid escape sequence near '\\{str[1]}'", Line);
+                throw new SyntaxException($"invalid escape sequence near '\\{str[1]}'", Line);
             }
 
             return buf.ToString();
@@ -407,14 +407,14 @@ namespace LuaGo.CodeAnalyzer
             string openingLongBracket = new Regex(Constants.OpeningLongBracketRegexString).Match(Chunk).Value;
             if (string.IsNullOrEmpty(openingLongBracket))
             {
-                throw new ErrorException($"invalid long string delimiter near '{Chunk.Substring(0, 2)}'", Line);
+                throw new SyntaxException($"invalid long string delimiter near '{Chunk.Substring(0, 2)}'", Line);
             }
 
             string closingLongBracket = openingLongBracket.Replace("[", "]");
             int closingLongBracketIdx = Chunk.IndexOf(closingLongBracket);
             if (closingLongBracketIdx < 0)
             {
-                throw new ErrorException("unfinished long string or comment", Line);
+                throw new SyntaxException("unfinished long string or comment", Line);
             }
 
             string str = Chunk.Substring(openingLongBracket.Length, closingLongBracketIdx - openingLongBracket.Length);
@@ -529,10 +529,5 @@ namespace LuaGo.CodeAnalyzer
                 Next(1);
             }
         }
-
-
-
-
-
     }
 }

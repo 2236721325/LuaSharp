@@ -383,7 +383,7 @@ namespace LuaGo.CodeAnalyzer.Parsers
             }
             else
             {
-                throw new ErrorException("not a number!", number_token.Line);
+                throw new SyntaxException("not a number!", number_token.Line);
             }
         }
 
@@ -455,7 +455,7 @@ namespace LuaGo.CodeAnalyzer.Parsers
                 default:
                     break;
             }
-            throw new ErrorException("checkVar Failed !", lexer.Line);
+            throw new SyntaxException("checkVar Failed !", lexer.Line);
         }
         private IExpression ParseFuncName(out bool hasColon)
         {
@@ -524,7 +524,6 @@ namespace LuaGo.CodeAnalyzer.Parsers
                     isVararg = true;
                     break;
                 }
-              
             }
             return names;
         }
