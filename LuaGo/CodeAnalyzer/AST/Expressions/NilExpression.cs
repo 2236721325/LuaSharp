@@ -4,5 +4,10 @@
     public class NilExpression : IExpression
     {
         public int Line { get; set; }
+
+        public NilExpression(int line)
+        {
+            Line = line;
+        }
     }
 }

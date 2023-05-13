@@ -44,7 +44,7 @@ namespace LuaGo.CodeAnalyzer
                 nextToken = null;
                 return result;
             }
-            skipWhiteSpace();
+            SkipWhiteSpace();
             if (Chunk.Length == 0)
             {
                 return new Token(TokenKind.TOKEN_EOF, Line, null);
@@ -54,140 +54,140 @@ namespace LuaGo.CodeAnalyzer
             switch (Chunk[0])
             {
                 case ';':
-                    next(1);
+                    Next(1);
                     return new Token(TokenKind.TOKEN_SEP_SEMI, Line, ";");
                 case ',':
-                    next(1);
+                    Next(1);
                     return new Token(TokenKind.TOKEN_SEP_COMMA, Line, ",");
                 case '(':
-                    next(1);
+                    Next(1);
                     return new Token(TokenKind.TOKEN_SEP_LPAREN, Line, "(");
                 case ')':
-                    next(1);
+                    Next(1);
                     return new Token(TokenKind.TOKEN_SEP_RPAREN, Line, ")");
                 case ']':
-                    next(1);
+                    Next(1);
                     return new Token(TokenKind.TOKEN_SEP_RBRACK, Line, "]");
                 case '{':
-                    next(1);
+                    Next(1);
                     return new Token(TokenKind.TOKEN_SEP_LCURLY, Line, "{");
                 case '}':
-                    next(1);
+                    Next(1);
                     return new Token(TokenKind.TOKEN_SEP_RCURLY, Line, "}");
                 case '+':
-                    next(1);
+                    Next(1);
                     return new Token(TokenKind.TOKEN_OP_ADD, Line, "+");
                 case '-':
-                    next(1);
+                    Next(1);
                     return new Token(TokenKind.TOKEN_OP_MINUS, Line, "-");
                 case '*':
-                    next(1);
+                    Next(1);
                     return new Token(TokenKind.TOKEN_OP_MUL, Line, "*");
                 case '^':
-                    next(1);
+                    Next(1);
                     return new Token(TokenKind.TOKEN_OP_POW, Line, "^");
                 case '%':
-                    next(1);
+                    Next(1);
                     return new Token(TokenKind.TOKEN_OP_MOD, Line, "%");
                 case '&':
-                    next(1);
+                    Next(1);
                     return new Token(TokenKind.TOKEN_OP_BAND, Line, "&");
                 case '|':
-                    next(1);
+                    Next(1);
                     return new Token(TokenKind.TOKEN_OP_BOR, Line, "|");
                 case '#':
-                    next(1);
+                    Next(1);
                     return new Token(TokenKind.TOKEN_OP_LEN, Line, "#");
                 case ':':
                     if (Chunk.StartsWith("::"))
                     {
-                        next(2);
+                        Next(2);
                         return new Token(TokenKind.TOKEN_SEP_LABEL, Line, "::");
                     }
                     else
                     {
-                        next(1);
+                        Next(1);
                         return new Token(TokenKind.TOKEN_SEP_COLON, Line, ":");
                     }
                 case '/':
                     if (Chunk.StartsWith("//"))
                     {
-                        next(2);
+                        Next(2);
                         return new Token(TokenKind.TOKEN_OP_IDIV, Line, "//");
                     }
                     else
                     {
-                        next(1);
+                        Next(1);
                         return new Token(TokenKind.TOKEN_OP_DIV, Line, "/");
                     }
                 case '~':
                     if (Chunk.StartsWith("~~"))
                     {
-                        next(2);
+                        Next(2);
                         return new Token(TokenKind.TOKEN_OP_NE, Line, "~~");
                     }
                     else
                     {
-                        next(1);
+                        Next(1);
                         return new Token(TokenKind.TOKEN_OP_WAVE, Line, "~");
                     }
                 case '=':
                     if (Chunk.StartsWith("=="))
                     {
-                        next(2);
+                        Next(2);
                         return new Token(TokenKind.TOKEN_OP_EQ, Line, "==");
                     }
                     else
                     {
-                        next(1);
+                        Next(1);
                         return new Token(TokenKind.TOKEN_OP_ASSIGN, Line, "=");
                     }
                 case '<':
                     if (Chunk.StartsWith("<<"))
                     {
-                        next(2);
+                        Next(2);
                         return new Token(TokenKind.TOKEN_OP_SHL, Line, "<<");
                     }
                     else if (Chunk.StartsWith("<="))
                     {
-                        next(2);
+                        Next(2);
                         return new Token(TokenKind.TOKEN_OP_LE, Line, "<=");
                     }
                     else
                     {
-                        next(1);
+                        Next(1);
                         return new Token(TokenKind.TOKEN_OP_LT, Line, "<");
                     }
                 case '>':
                     if (Chunk.StartsWith(">>"))
                     {
-                        next(2);
+                        Next(2);
                         return new Token(TokenKind.TOKEN_OP_SHR, Line, ">>");
                     }
                     else if (Chunk.StartsWith(">="))
                     {
-                        next(2);
+                        Next(2);
                         return new Token(TokenKind.TOKEN_OP_GE, Line, ">=");
                     }
                     else
                     {
-                        next(1);
+                        Next(1);
                         return new Token(TokenKind.TOKEN_OP_GT, Line, ">");
                     }
                 case '.':
                     if (Chunk.StartsWith("..."))
                     {
-                        next(3);
+                        Next(3);
                         return new Token(TokenKind.TOKEN_VARARG, Line, "...");
                     }
                     else if (Chunk.StartsWith(".."))
                     {
-                        next(2);
+                        Next(2);
                         return new Token(TokenKind.TOKEN_OP_CONCAT, Line, "..");
                     }
                     else if (Chunk.Length == 1 || !char.IsDigit(Chunk[1]))
                     {
-                        next(1);
+                        Next(1);
                         return new Token(TokenKind.TOKEN_SEP_DOT, Line, ".");
                     }
                     break;
@@ -196,28 +196,28 @@ namespace LuaGo.CodeAnalyzer
                 case '[':
                     if (Chunk.StartsWith("[[") || Chunk.StartsWith("-["))
                     {
-                        return new Token(TokenKind.TOKEN_STRING, Line, scanLongString());
+                        return new Token(TokenKind.TOKEN_STRING, Line, ScanLongString());
 
                     }
                     else
                     {
-                        next(1);
+                        Next(1);
                         return new Token(TokenKind.TOKEN_SEP_LBRACK, Line, "[");
                     }
                 case '\'':
                 case '"':
-                    return new Token(TokenKind.TOKEN_STRING, Line, scanShortString());
+                    return new Token(TokenKind.TOKEN_STRING, Line, ScanShortString());
 
             }
             if (char.IsDigit(Chunk[0]) || Chunk[0] == '0')
             {
-                return scanNumber();
+                return ScanNumber();
             }
 
 
             if (Chunk[0] == '_' || char.IsLetter(Chunk[0]))
             {
-                var value = scanIdentifier();
+                var value = ScanIdentifier();
                 if (Constants.keywords.ContainsKey(value))
                 {
                     return new Token(Constants.keywords[value], Line, value);
@@ -262,25 +262,25 @@ namespace LuaGo.CodeAnalyzer
         }
 
 
-        private string scanShortString()
+        private string ScanShortString()
         {
             var reShortRegex = new Regex(Constants.ShortStrRegexString);
             var strMatch = reShortRegex.Match(Chunk);
             if (strMatch.Success)
             {
                 var str = strMatch.Value;
-                next(str.Length);
+                Next(str.Length);
                 str = str.Substring(1, str.Length - 2);
                 if (str.Contains("\\"))
                 {
                     Line += Regex.Matches(str, Constants.NewLineRegexString).Count;
-                    str = escape(str);
+                    str = Escape(str);
                 }
                 return str;
             }
             throw new ErrorException("unfinished string", Line);
         }
-        public string escape(string str)
+        public string Escape(string str)
         {
             StringBuilder buf = new StringBuilder();
 
@@ -390,7 +390,7 @@ namespace LuaGo.CodeAnalyzer
                         break;
                     case 'z':
                         str = str.Substring(2);
-                        while (str.Length > 0 && isWhiteSpace(str[0])) // todo
+                        while (str.Length > 0 && IsWhiteSpace(str[0])) // todo
                         {
                             str = str.Substring(1);
                         }
@@ -402,7 +402,7 @@ namespace LuaGo.CodeAnalyzer
             return buf.ToString();
         }
 
-        private string scanLongString()
+        private string ScanLongString()
         {
             string openingLongBracket = new Regex(Constants.OpeningLongBracketRegexString).Match(Chunk).Value;
             if (string.IsNullOrEmpty(openingLongBracket))
@@ -418,7 +418,7 @@ namespace LuaGo.CodeAnalyzer
             }
 
             string str = Chunk.Substring(openingLongBracket.Length, closingLongBracketIdx - openingLongBracket.Length);
-            next(closingLongBracketIdx + closingLongBracket.Length);
+            Next(closingLongBracketIdx + closingLongBracket.Length);
 
             var newLineRegex = new Regex(Constants.NewLineRegexString);
             str = newLineRegex.Replace(str, "\n");
@@ -431,52 +431,52 @@ namespace LuaGo.CodeAnalyzer
             return str;
         }
 
-        private string scanIdentifier()
+        private string ScanIdentifier()
         {
-            return scan(Constants.IdentifierRegexString);
+            return Scan(Constants.IdentifierRegexString);
         }
 
 
-        private string scan(string regexString)
+        private string Scan(string regexString)
         {
             var regex = new Regex(regexString);
             var match = regex.Match(Chunk);
             if (match.Success)
             {
                 var value = match.Value;
-                next(value.Length);
+                Next(value.Length);
                 return value;
             }
 
             throw new Exception("Unexpected Match");
         }
-        private Token scanNumber()
+        private Token ScanNumber()
         {
-            var value = scan(Constants.NumberRegexString);
+            var value = Scan(Constants.NumberRegexString);
             return new Token(TokenKind.TOKEN_NUMBER, Line, value);
 
         }
-        private void skipWhiteSpace()
+        private void SkipWhiteSpace()
         {
             while (Chunk.Length > 0)
             {
                 if (Chunk.StartsWith("--"))
                 {
-                    skipComment();
+                    SkipComment();
                 }
                 else if (Chunk.StartsWith("\r\n") || Chunk.StartsWith("\n\r"))
                 {
-                    next(2);
+                    Next(2);
                     Line += 1;
                 }
-                else if (isNewLine(Chunk[0]))
+                else if (IsNewLine(Chunk[0]))
                 {
-                    next(1);
+                    Next(1);
                     Line += 1;
                 }
-                else if (isWhiteSpace(Chunk[0]))
+                else if (IsWhiteSpace(Chunk[0]))
                 {
-                    next(1);
+                    Next(1);
                 }
                 else
                 {
@@ -485,17 +485,17 @@ namespace LuaGo.CodeAnalyzer
             }
         }
 
-        private void next(int n)
+        private void Next(int n)
         {
             Chunk = Chunk[n..];
         }
 
-        private bool isWhiteSpace(char c)
+        private bool IsWhiteSpace(char c)
         {
             return Constants.WhiteSpace.Contains(c);
         }
 
-        private bool isNewLine(char c)
+        private bool IsNewLine(char c)
         {
             return c == '\r' || c == '\n';
         }
@@ -509,24 +509,24 @@ namespace LuaGo.CodeAnalyzer
                  long comment
                 ]===]
          */
-        private void skipComment()
+        private void SkipComment()
         {
-            next(2);
+            Next(2);
             if (Chunk.StartsWith("["))
             {
 
                 var openingLongBracket = Regex.Match(Chunk, Constants.OpeningLongBracketRegexString).Value;
                 if (openingLongBracket != "")
                 {
-                    scanLongString();
+                    ScanLongString();
                     return;
                 }
             }
 
 
-            while (Chunk.Length > 0 && !isNewLine(Chunk[0]))
+            while (Chunk.Length > 0 && !IsNewLine(Chunk[0]))
             {
-                next(1);
+                Next(1);
             }
         }
 

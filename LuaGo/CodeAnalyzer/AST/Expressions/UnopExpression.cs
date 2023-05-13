@@ -4,7 +4,16 @@
     public class UnopExpression : IExpression
     {
         public int Line { get; set; }
-        public int Op { get; set; }
+
+        public UnopExpression(int line, TokenKind op, IExpression expression)
+        {
+            Line = line;
+            Op = op;
+            Expression = expression;
+        }
+
+        public TokenKind Op { get; set; }
         public IExpression Expression { get; set; }
+
     }
 }

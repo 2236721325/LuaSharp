@@ -4,5 +4,10 @@
     public class FalseExpression : IExpression
     {
         public int Line { get; set; }
+
+        public FalseExpression(int line)
+        {
+            Line = line;
+        }
     }
 }

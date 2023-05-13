@@ -2,8 +2,6 @@
 
 namespace LuaGo.CodeAnalyzer.AST.Statements
 {
-    public class FunctionCallStatement : FunctionCallExpression
-    {
-
-    }
+    //FuctionCallStatement = FuctionCallExpression
+ 
 }

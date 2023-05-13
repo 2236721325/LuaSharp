@@ -4,5 +4,10 @@
     public class ParensExpression : IExpression
     {
         public IExpression Expression { get; set; }
+
+        public ParensExpression(IExpression expression)
+        {
+            Expression = expression;
+        }
     }
 }

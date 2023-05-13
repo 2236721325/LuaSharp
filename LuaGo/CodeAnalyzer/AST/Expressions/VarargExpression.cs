@@ -4,5 +4,10 @@
     public class VarargExpression : IExpression
     {
         public int Line { get; set; }
+
+        public VarargExpression(int line)
+        {
+            Line = line;
+        }
     }
 }
