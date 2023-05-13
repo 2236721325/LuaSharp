@@ -8,7 +8,8 @@ using System.Threading.Tasks;
 
 namespace LuaGo.CodeAnalyzer.Parsers
 {
-/*
+    /*
+     
             exp    ::= exp12
             exp12 ::= exp11 {or exp11}
             exp11 ::= exp10 {andexp10}
@@ -18,14 +19,15 @@ namespace LuaGo.CodeAnalyzer.Parsers
             exp7  ::= exp6 {'&' exp6}
             exp6  ::= exp5 {('<<' | '>>') exp5}
             exp5  ::= exp4 {'..' exp4}
-            exp4  ::= exp3 {('+' | '-' | '＊' | '/' | '//' | '%') exp3}
+            exp4  ::= exp3 {('+' | '-' ) exp3}
+            exp3  ::= exp2 {( '＊' | '/' | '//' | '%' ) exp2}
             exp2  ::= {('not' | '#' | '-' | '～')} exp1
             exp1  ::= exp0 {'^' exp2}
             exp0  ::= nil | false | true | Numeral | LiteralString
                     | '...' | functiondef | prefixexp | tableconstructor
 
 
-*/
+    */
     /// <summary>
     /// Parse expression
     /// </summary>
@@ -35,7 +37,7 @@ namespace LuaGo.CodeAnalyzer.Parsers
         {
             return ParseExpression12();
         }
-
+        // exp12 ::= exp11 {or exp11}
         private IExpression ParseExpression12()
         {
             var exp = ParseExpression11();
@@ -53,9 +55,101 @@ namespace LuaGo.CodeAnalyzer.Parsers
             return exp;
         }
 
+        // exp11 ::= exp10 {and exp10}
         private IExpression ParseExpression11()
         {
-            throw new NotImplementedException();
+            var exp = ParseExpression10();
+            while (lexer.LookAhead().Kind == TokenKind.TOKEN_OP_AND)
+            {
+                var or_token = lexer.NextToken();
+
+                exp = new BinopExpression(
+                    exp, or_token.Kind,
+                    ParseExpression10(),
+                    or_token.Line
+                    );
+            }
+            return exp;
+        }
+
+        // exp10 ::= exp9 {('<' | '>' | '<=' | '>=' | '～=' | '==') exp9}
+
+        private IExpression ParseExpression10()
+        {
+            var exp = ParseExpression9();
+            while (true)
+            {
+                switch (lexer.LookAhead().Kind)
+                {
+                    case TokenKind.TOKEN_OP_LE:
+                    case TokenKind.TOKEN_OP_LT:
+                    case TokenKind.TOKEN_OP_GE:
+                    case TokenKind.TOKEN_OP_GT:
+                    case TokenKind.TOKEN_OP_NE:
+                    case TokenKind.TOKEN_OP_EQ:
+                        var op_token = lexer.NextToken();
+                        exp = new BinopExpression(exp, op_token.Kind, ParseExpression9(), op_token.Line);
+                        break;
+                    default:
+                        return exp;
+                }
+            }
+
+        }
+        //   exp9  ::= exp8 {'|' exp8}
+        private IExpression ParseExpression9()
+        {
+            var exp = ParseExpression8();
+            while (lexer.LookAhead().Kind == TokenKind.TOKEN_OP_BOR)
+            {
+                var op_token = lexer.NextToken();
+                exp = new BinopExpression(exp, op_token.Kind, ParseExpression8(), op_token.Line);
+            }
+            return exp;
+        }
+
+        //exp8  ::= exp7 {'～' exp7}
+        private IExpression ParseExpression8()
+        {
+            var exp = ParseExpression7();
+            while (lexer.LookAhead().Kind == TokenKind.TOKEN_OP_BXOR)
+            {
+                var op_token = lexer.NextToken();
+                exp = new BinopExpression(exp, op_token.Kind, ParseExpression7(), op_token.Line);
+            }
+            return exp;
+        }
+
+        //exp7  ::= exp6 {'&' exp6}
+
+        private IExpression ParseExpression7()
+        {
+            var exp = ParseExpression6();
+            while (lexer.LookAhead().Kind == TokenKind.TOKEN_OP_BAND)
+            {
+                var op_token = lexer.NextToken();
+                exp = new BinopExpression(exp, op_token.Kind, ParseExpression6(), op_token.Line);
+            }
+            return exp;
+        }
+
+        // exp6  ::= exp5 {('<<' | '>>') exp5}
+        private IExpression ParseExpression6()
+        {
+            var exp = ParseExpression5();
+            while (true)
+            {
+                switch (lexer.LookAhead().Kind)
+                {
+                    case TokenKind.TOKEN_OP_SHL:
+                    case TokenKind.TOKEN_OP_SHR:
+                        var op_token = lexer.NextToken();
+                        exp = new BinopExpression(exp, op_token.Kind, ParseExpression5(), op_token.Line);
+                        break;
+                    default:
+                        return exp;
+                }
+            }
         }
 
         // exp5  ::= exp4 {'..' exp4}
@@ -79,10 +173,46 @@ namespace LuaGo.CodeAnalyzer.Parsers
             return new ConcatExpression(line, expList);
         }
 
-        // exp4  ::= exp3 {('+' | '-' | '＊' | '/' | '//' | '%') exp3}
+        // exp4  ::= exp3 {('+' | '-' ) exp3}
         private IExpression ParseExpression4()
         {
-            throw new NotImplementedException();
+            var exp = ParseExpression3();
+            while (true)
+            {
+                switch (lexer.LookAhead().Kind)
+                {
+                    case TokenKind.TOKEN_OP_ADD:
+                    case TokenKind.TOKEN_OP_SUB:
+                        var op_token = lexer.NextToken();
+                        exp = new BinopExpression(exp, op_token.Kind, ParseExpression3(), op_token.Line);
+                        break;
+                    default:
+                        return exp;
+                }
+            }
+        }
+
+        // exp3  ::= exp2 {( '＊' | '/' | '//' | '%' ) exp2}
+
+        private IExpression ParseExpression3()
+        {
+            var exp = ParseExpression2();
+            while (true)
+            {
+                switch (lexer.LookAhead().Kind)
+                {
+                    case TokenKind.TOKEN_OP_MUL:
+                    case TokenKind.TOKEN_OP_MOD:
+                    case TokenKind.TOKEN_OP_DIV:
+                    case TokenKind.TOKEN_OP_IDIV:
+
+                        var op_token = lexer.NextToken();
+                        exp = new BinopExpression(exp, op_token.Kind, ParseExpression2(), op_token.Line);
+                        break;
+                    default:
+                        return exp;
+                }
+            }
         }
 
 
@@ -163,7 +293,19 @@ namespace LuaGo.CodeAnalyzer.Parsers
 
         private IExpression ParseNumberExpression()
         {
-            throw new NotImplementedException();
+            var number_token = lexer.NextToken();
+            if(long.TryParse(number_token.Value,out long long_result))
+            {
+                return new IntegerExpression(number_token.Line, long_result);
+            }
+            else if(double.TryParse(number_token.Value,out double double_result))
+            {
+                return new FloatExpression(number_token.Line,double_result);
+            }
+            else
+            {
+                throw new ErrorException("not a number!", number_token.Line);
+            }
         }
     
 
