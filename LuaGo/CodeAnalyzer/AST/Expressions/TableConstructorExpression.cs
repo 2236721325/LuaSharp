@@ -5,9 +5,9 @@
     {
         public int Line { get; set; }
         public int LastLine { get; set; }
-        public List<IExpression> KeyExpressions { get; set; }
+        public List<IExpression?> KeyExpressions { get; set; }
 
-        public TableConstructorExpression(List<IExpression> keyExpressions, List<IExpression> valExpressions, int line, int lastLine)
+        public TableConstructorExpression(List<IExpression?> keyExpressions, List<IExpression> valExpressions, int line, int lastLine)
         {
             KeyExpressions = keyExpressions;
             ValExpressions = valExpressions;

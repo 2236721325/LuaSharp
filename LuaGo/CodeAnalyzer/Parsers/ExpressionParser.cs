@@ -3,6 +3,7 @@ using LuaGo.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -37,13 +38,17 @@ namespace LuaGo.CodeAnalyzer.Parsers
         {
             return ParseExpression12();
         }
+
+
+
+        #region expression parse 12-0
         // exp12 ::= exp11 {or exp11}
         private IExpression ParseExpression12()
         {
             var exp = ParseExpression11();
             while (lexer.LookAhead().Kind == TokenKind.TOKEN_OP_OR)
             {
-                var or_token=lexer.NextToken();
+                var or_token = lexer.NextToken();
 
                 exp = new BinopExpression(
                     exp, or_token.Kind,
@@ -226,9 +231,9 @@ namespace LuaGo.CodeAnalyzer.Parsers
                 case TokenKind.TOKEN_OP_BNOT:
                 case TokenKind.TOKEN_OP_LEN:
                 case TokenKind.TOKEN_OP_NOT:
-                    var op_token=lexer.NextToken();
+                    var op_token = lexer.NextToken();
                     return new UnopExpression(op_token.Line, op_token.Kind, ParseExpression2());
-             
+
             }
             return ParseExpression1();
         }
@@ -286,28 +291,102 @@ namespace LuaGo.CodeAnalyzer.Parsers
             }
         }
 
+
+        #endregion
+
+
+        // tableconstructor ::= ‘{’ [fieldlist] ‘}’
         private IExpression ParseTableConstructorExpression()
         {
-            throw new NotImplementedException();
+            int line = lexer.Line;
+            lexer.NextTokenOfKind(TokenKind.TOKEN_SEP_LCURLY); // {
+            var (keyExps, valExps) = ParseFieldList();
+            lexer.NextTokenOfKind(TokenKind.TOKEN_SEP_RCURLY); // }
+            int lastLine = lexer.Line;
+            return new TableConstructorExpression( keyExps, valExps,line,lastLine);
+        }
+
+        // fieldlist ::= field {fieldsep field} [fieldsep]
+
+        private (List<IExpression?> keyExps,List<IExpression> ValueExps) ParseFieldList()
+        {
+            List<IExpression?> ks = new List<IExpression?>();
+            List<IExpression> vs = new List<IExpression>();
+
+            if (lexer.LookAhead().Kind != TokenKind.TOKEN_SEP_RCURLY)
+            {
+                (IExpression? k, IExpression v) = ParseField();
+                ks.Add(k);
+                vs.Add(v);
+
+                while (IsFieldSep(lexer.LookAhead()))
+                {
+                    lexer.NextToken();
+                    if (lexer.LookAhead().Kind !=TokenKind.TOKEN_SEP_RCURLY)
+                    {
+                        (k,v) = ParseField();
+                        ks.Add(k);
+                        vs.Add(v);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+
+            return (ks, vs);
+        
+        }
+
+        private bool IsFieldSep(Token token)
+        {
+            return token.Kind == TokenKind.TOKEN_SEP_COMMA || token.Kind == TokenKind.TOKEN_SEP_SEMI;
+        }
+
+        // field ::= ‘[’ exp ‘]’ ‘=’ exp | Name ‘=’ exp | exp
+        private (IExpression? keyExp, IExpression valueExp) ParseField()
+        {
+
+            if (lexer.LookAhead().Kind == TokenKind.TOKEN_SEP_LBRACK)
+            {
+                lexer.NextToken();
+                var keyExp = ParseExpression();
+                lexer.NextTokenOfKind(TokenKind.TOKEN_SEP_RBRACK);
+                lexer.NextTokenOfKind(TokenKind.TOKEN_OP_ASSIGN);
+                var valExp = ParseExpression();
+                return (keyExp, valExp);
+
+            }
+            var exp = ParseExpression();
+            if (exp is NameExpression nameExp && lexer.LookAhead().Kind == TokenKind.TOKEN_OP_ASSIGN)
+            {
+                lexer.NextToken();
+                var keyExp = new StringExpression(nameExp.Name, nameExp.Line);
+                var valExp = ParseExpression();
+                return (keyExp, valExp);
+            }
+            return (null, exp);
+
         }
 
         private IExpression ParseNumberExpression()
         {
             var number_token = lexer.NextToken();
-            if(long.TryParse(number_token.Value,out long long_result))
+            if (long.TryParse(number_token.Value, out long long_result))
             {
                 return new IntegerExpression(number_token.Line, long_result);
             }
-            else if(double.TryParse(number_token.Value,out double double_result))
+            else if (double.TryParse(number_token.Value, out double double_result))
             {
-                return new FloatExpression(number_token.Line,double_result);
+                return new FloatExpression(number_token.Line, double_result);
             }
             else
             {
                 throw new ErrorException("not a number!", number_token.Line);
             }
         }
-    
+
 
         private List<IExpression>? ParseReturnExpressions()
         {
@@ -404,11 +483,51 @@ namespace LuaGo.CodeAnalyzer.Parsers
 
         private FuncDefExpression ParseFuncDefExpression()
         {
-            throw new NotImplementedException();
+            var line = lexer.Line;
+            lexer.NextTokenOfKind(TokenKind.TOKEN_SEP_LPAREN);
+
+            var parList = ParseParList(out bool isVararg);
+            lexer.NextTokenOfKind(TokenKind.TOKEN_SEP_RPAREN);
+            var block = ParseBlock();
+
+            var end_token = lexer.NextTokenOfKind(TokenKind.TOKEN_KW_END);
+            return new FuncDefExpression(isVararg, parList, block, line, end_token.Line);
         }
 
+        private List<string>? ParseParList(out bool isVararg)
+        {
+            var names = new List<string>();
+            isVararg = false;
+            switch (lexer.LookAhead().Kind)
+            {
+                case TokenKind.TOKEN_SEP_RPAREN:
+                    return null;
 
-
+                case TokenKind.TOKEN_VARARG:
+                    lexer.NextToken();
+                    isVararg = true;
+                    return null;
+            }
+            var name_token = lexer.NextIdentifier();
+            names.Add(name_token.Value!);
+            while (lexer.LookAhead().Kind == TokenKind.TOKEN_SEP_COMMA)
+            {
+                lexer.NextToken();
+                if (lexer.LookAhead().Kind == TokenKind.TOKEN_IDENTIFIER)
+                {
+                    name_token = lexer.NextIdentifier();
+                    names.Add(name_token.Value!);
+                }
+                else
+                {
+                    lexer.NextTokenOfKind(TokenKind.TOKEN_VARARG);
+                    isVararg = true;
+                    break;
+                }
+              
+            }
+            return names;
+        }
     }
 
 }

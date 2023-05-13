@@ -138,6 +138,10 @@ namespace LuaGo.CodeAnalyzer.Parsers
             var fdExp = ParseFuncDefExpression();
             if (hasColon)
             {
+                if (fdExp.ParList == null)
+                {
+                    fdExp.ParList = new List<string>();
+                }
                 fdExp.ParList.Add("");
                 fdExp.ParList.InsertRange(1, fdExp.ParList);
                 fdExp.ParList.Insert(0, "self");
