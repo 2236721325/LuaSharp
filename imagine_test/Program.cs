@@ -23,19 +23,14 @@
     }
     internal class Program
     {
-
+        
         static void Main(string[] args)
         {
             //IB a = new C("hello");
 
             //var b = a as C;
             //b.ShowName();
-            string[] a_strings = new string[]
-            {
-                "hello",
-                "world"
-            };
-
+          
         }
     }
 }
