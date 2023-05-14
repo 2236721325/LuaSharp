@@ -1,10 +1,65 @@
-# LuaGo
-## ²Î¿¼Êé¼®
-  ×Ô¼º¶¯ÊÖÊµÏÖLua £¨ ĞéÄâ»ú¡¢±àÒëÆ÷ºÍ±ê×¼¿â£©
+ï»¿# LuaSharp
+## å‚è€ƒä¹¦ç±
+  è‡ªå·±åŠ¨æ‰‹å®ç°Lua ï¼ˆ è™šæ‹Ÿæœºã€ç¼–è¯‘å™¨å’Œæ ‡å‡†åº“ï¼‰
   https://book.douban.com/subject/30348061/
-## Ô¸¾°
-	Ğ´Ò»¸ö±È½ÏÍêÉÆµÄlua±àÒëÆ÷À´ÁË½â´´Ôì±à³ÌÓïÑÔËùĞèÒªµÄÒ»ÇĞ
-	ÓÃC#±àĞ´¡££¨¿ìËÙÊµÏÖÏë·¨£©
+## æ„¿æ™¯
+	å†™ä¸€ä¸ªæ¯”è¾ƒå®Œå–„çš„luaç¼–è¯‘å™¨æ¥äº†è§£åˆ›é€ ç¼–ç¨‹è¯­è¨€æ‰€éœ€è¦çš„ä¸€åˆ‡
+	ç”¨C#ç¼–å†™ã€‚ï¼ˆå¿«é€Ÿå®ç°æƒ³æ³•ï¼‰
 
 
-## 
+## lua è¯­è¨€çš„  ebnf
+
+chunk ::= {stat [`;Â´]} [laststat[`;Â´]]
+	block ::= chunk
+	stat ::=  varlist1 `=Â´ explist1  | 
+		 functioncall  | 
+		 do block end  | 
+		 while exp do block end  | 
+		 repeat block until exp  | 
+		 if exp then block {elseif exp then block} [else block] end  | 
+		 for Name `=Â´ exp `,Â´ exp [`,Â´ exp] do block end  | 
+		 for namelist in explist1 do block end  | 
+		 function funcname funcbody  | 
+		 local function Name funcbody  | 
+		 local namelist [`=Â´ explist1] 
+
+	laststat ::= return [explist1]  |  break
+
+	funcname ::= Name {`.Â´ Name} [`:Â´ Name]
+
+	varlist1 ::= var {`,Â´ var}
+
+	var ::=  Name  |  prefixexp `[Â´ exp `]Â´  |  prefixexp `.Â´ Name 
+
+	namelist ::= Name {`,Â´ Name}
+
+	explist1 ::= {exp `,Â´} exp
+
+	exp ::=  nil  |  false  |  true  |  Number  |  String  |  `...Â´  | 
+		 function  |  prefixexp  |  tableconstructor  |  exp binop exp  |  unop exp 
+
+	prefixexp ::= var  |  functioncall  |  `(Â´ exp `)Â´
+
+	functioncall ::=  prefixexp args  |  prefixexp `:Â´ Name args 
+
+	args ::=  `(Â´ [explist1] `)Â´  |  tableconstructor  |  String 
+
+	function ::= function funcbody
+
+	funcbody ::= `(Â´ [parlist1] `)Â´ block end
+
+	parlist1 ::= namelist [`,Â´ `...Â´]  |  `...Â´
+
+	tableconstructor ::= `{Â´ [fieldlist] `}Â´
+
+	fieldlist ::= field {fieldsep field} [fieldsep]
+
+	field ::= `[Â´ exp `]Â´ `=Â´ exp  |  Name `=Â´ exp  |  exp
+
+	fieldsep ::= `,Â´  |  `;Â´
+
+	binop ::= `+Â´  |  `-Â´  |  `*Â´  |  `/Â´  |  `^Â´  |  `%Â´  |  `..Â´  | 
+		 `<Â´  |  `<=Â´  |  `>Â´  |  `>=Â´  |  `==Â´  |  `~=Â´  | 
+		 and  |  or
+
+	unop ::= `-Â´  |  not  |  `#Â´
