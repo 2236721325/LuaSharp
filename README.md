@@ -9,6 +9,8 @@
 
 ## lua 语言的  ebnf
 
+```c
+
 chunk ::= {stat [`;´]} [laststat[`;´]]
 	block ::= chunk
 	stat ::=  varlist1 `=´ explist1  | 
@@ -63,3 +65,5 @@ chunk ::= {stat [`;´]} [laststat[`;´]]
 		 and  |  or
 
 	unop ::= `-´  |  not  |  `#´
+
+```
