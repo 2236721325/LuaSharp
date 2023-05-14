@@ -9,7 +9,7 @@
 
 ## lua 语言的  ebnf
 
-```c
+```
 
 chunk ::= {stat [`;´]} [laststat[`;´]]
 	block ::= chunk
