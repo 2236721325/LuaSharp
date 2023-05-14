@@ -9,6 +9,8 @@
 
 ## lua 语言的  ebnf
 
+ebnf 真的非常有用 简洁
+
 ```
 
 chunk ::= {stat [`;´]} [laststat[`;´]]
