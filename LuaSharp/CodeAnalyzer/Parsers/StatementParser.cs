@@ -9,7 +9,7 @@ using LuaSharp.CodeAnalyzer.AST.Expressions;
 using LuaSharp.CodeAnalyzer;
 using LuaSharp.CodeAnalyzer.AST;
 
-namespace LuaGo.CodeAnalyzer.Parsers
+namespace LuaSharp.CodeAnalyzer.Parsers
 {
     /// <summary>
     /// Parse statement

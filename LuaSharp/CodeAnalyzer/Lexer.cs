@@ -514,9 +514,8 @@ namespace LuaSharp.CodeAnalyzer
             Next(2);
             if (Chunk.StartsWith("["))
             {
-
-                var openingLongBracket = Regex.Match(Chunk, Constants.OpeningLongBracketRegexString).Value;
-                if (openingLongBracket != "")
+                var openingLongBracket = Regex.Match(Chunk, Constants.OpeningLongBracketRegexString);
+                if (openingLongBracket.Success)
                 {
                     ScanLongString();
                     return;

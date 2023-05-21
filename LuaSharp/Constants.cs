@@ -55,6 +55,7 @@ namespace LuaSharp
         public const string UnicodeEscapeSeqRegexString = @"^\\u\{[0 - 9a - fA - F] +\}";
 
         public const string NewLineRegexString = "\r\n|\n\r|\n|\r";
+       
 
     }
 }

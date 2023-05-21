@@ -4,6 +4,8 @@ namespace LuaSharp.CodeAnalyzer.AST.Statements
 {
     public class WhileStatement : IStatement
     {
+        public string TypeName => nameof(WhileStatement);
+
         public IExpression ConditionExpression { get; set; }
         public Block Block { get; set; }
 

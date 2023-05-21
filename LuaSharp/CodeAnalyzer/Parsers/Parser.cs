@@ -1,9 +1,13 @@
 ﻿
 using LuaSharp.CodeAnalyzer;
 using LuaSharp.CodeAnalyzer.AST;
+using LuaSharp.CodeAnalyzer.AST.Expressions;
+using LuaSharp.CodeAnalyzer.AST.Statements;
 
-namespace LuaGo.CodeAnalyzer.Parsers
+namespace LuaSharp.CodeAnalyzer.Parsers
 {
+ 
+
     public partial class Parser
     {
 
@@ -11,6 +15,12 @@ namespace LuaGo.CodeAnalyzer.Parsers
         public Parser(Lexer lexer)
         {
             this.lexer = lexer;
+        }
+        public Block Parse()
+        {
+            var block = ParseBlock();
+            lexer.NextTokenOfKind(TokenKind.TOKEN_EOF);
+            return block;
         }
 
         private Block ParseBlock()

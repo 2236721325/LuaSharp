@@ -9,5 +9,8 @@
         {
             Line = line;
         }
+
+        public string TypeName => nameof(VarargExpression);
+
     }
 }

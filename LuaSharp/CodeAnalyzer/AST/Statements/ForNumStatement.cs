@@ -4,6 +4,8 @@ namespace LuaSharp.CodeAnalyzer.AST.Statements
 {
     public class ForNumStatement : IStatement
     {
+        public string TypeName => nameof(ForNumStatement);
+
         public int LineOfFor { get; set; }
 
         public ForNumStatement(int lineOfFor, int lineOfDo, string varName, IExpression initExpression, IExpression limitExpression, IExpression stepExpression, Block block)

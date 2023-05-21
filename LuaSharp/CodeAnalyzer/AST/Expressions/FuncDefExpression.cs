@@ -3,6 +3,8 @@
     // 定义 FuncDefExpression 类型
     public class FuncDefExpression : IExpression
     {
+        public string TypeName => nameof(FuncDefExpression);
+
         public int Line { get; set; }
         public int LastLine { get; set; }
         public List<string>? ParList { get; set; }

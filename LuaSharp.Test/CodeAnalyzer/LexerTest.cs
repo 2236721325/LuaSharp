@@ -2,7 +2,7 @@
 using System.Text.Json;
 using Xunit.Abstractions;
 
-namespace LuaGo.Test.CodeAnalyzer
+namespace LuaSharp.Test.CodeAnalyzer
 {
     public class LexerTest
     {
@@ -42,6 +42,36 @@ namespace LuaGo.Test.CodeAnalyzer
                 Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
             });
             _Output.WriteLine(result);
+        }
+
+
+        [Theory]
+        [InlineData(@"
+--print(""单行注释"")
+
+--[[
+print(""整段注释"")
+print(""整段注释"")
+print(""整段注释"")
+]]
+
+
+")]
+        public void SkipCommentTest(string code)
+        {
+            var lexer = new Lexer("main", code);
+            var tokens = new List<Token>();
+            while (true)
+            {
+                var token = lexer.NextToken();
+                tokens.Add(token);
+                if (token.Kind == TokenKind.TOKEN_EOF)
+                {
+                    break;
+                }
+            }
+
+            Console.WriteLine(tokens.Count);
         }
 
     }

@@ -5,6 +5,6 @@
     /// </summary>
     public interface IExpression
     {
-
+        public string TypeName { get; }
     }
 }

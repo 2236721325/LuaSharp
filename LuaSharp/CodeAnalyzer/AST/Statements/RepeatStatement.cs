@@ -4,6 +4,8 @@ namespace LuaSharp.CodeAnalyzer.AST.Statements
 {
     public class RepeatStatement : IStatement
     {
+        public string TypeName => nameof(RepeatStatement);
+
         public IExpression ConditionExpression { get; set; }
         public Block Block { get; set; }
 

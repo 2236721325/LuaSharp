@@ -3,14 +3,17 @@
     // 定义 FloatExpression 类型
     public class FloatExpression : IExpression
     {
+        public string TypeName => nameof(FloatExpression);
+
         public int Line { get; set; }
 
-        public FloatExpression(int line, double val)
+        public FloatExpression(int line, double value)
         {
             Line = line;
-            Val = val;
+            Value = value;
         }
 
-        public double Val { get; set; }
+        public double Value { get; set; }
+
     }
 }

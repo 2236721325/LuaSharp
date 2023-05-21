@@ -4,6 +4,9 @@ namespace LuaSharp.CodeAnalyzer.AST.Statements
 {
     public class LocalVarDeclareStatement : IStatement
     {
+
+        public string TypeName => nameof(LocalVarDeclareStatement);
+
         public int LastLine { get; set; }
 
         public LocalVarDeclareStatement(int lastLine, List<string> nameList, List<IExpression>? expressionList)

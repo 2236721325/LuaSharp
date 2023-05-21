@@ -9,7 +9,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LuaGo.CodeAnalyzer.Parsers
+namespace LuaSharp.CodeAnalyzer.Parsers
 {
     /*
      
@@ -420,8 +420,10 @@ namespace LuaGo.CodeAnalyzer.Parsers
 
         private List<IExpression> ParseExpressions()
         {
-            var expressionList = new List<IExpression>();
-            expressionList.Add(ParseExpression());
+            var expressionList = new List<IExpression>
+            {
+                ParseExpression()
+            };
             while (lexer.LookAhead().Kind == TokenKind.TOKEN_SEP_COMMA)
             {
                 lexer.NextToken();
@@ -429,10 +431,7 @@ namespace LuaGo.CodeAnalyzer.Parsers
             }
             return expressionList;
         }
-        private IExpression ParsePrefixExpression()
-        {
-            throw new NotImplementedException();
-        }
+     
         private List<IExpression> FinishVarList(IExpression var0)
         {
             var vars = new List<IExpression>

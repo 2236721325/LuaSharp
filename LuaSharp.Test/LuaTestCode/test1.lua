@@ -1,4 +1,4 @@
-﻿array = {"Google", "Runoob"}
+﻿array,hello = {"Google", "Runoob"} , {"Google", "Runoob"}
 
 function elementIterator (collection)
    local index = 0
@@ -17,4 +17,4 @@ end
 for element in elementIterator(array)
 do
    print(element)
-end
+end 

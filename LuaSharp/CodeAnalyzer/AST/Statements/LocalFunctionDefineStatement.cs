@@ -4,6 +4,8 @@ namespace LuaSharp.CodeAnalyzer.AST.Statements
 {
     public class LocalFunctionDefineStatement : IStatement
     {
+        public string TypeName => nameof(LocalFunctionDefineStatement);
+
         public string Name { get; set; }
 
         public LocalFunctionDefineStatement(string name, FuncDefExpression funcDefExpression)

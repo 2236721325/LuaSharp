@@ -3,6 +3,8 @@
     // 定义 StringExpression 类型
     public class StringExpression : IExpression
     {
+        public string TypeName => nameof(StringExpression);
+
 
         public int Line { get; set; }
         public string Str { get; set; }
@@ -12,5 +14,6 @@
             Str = str;
             Line = line;
         }
+
     }
 }

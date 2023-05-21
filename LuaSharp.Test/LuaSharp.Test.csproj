@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LuaGo\LuaSharp.csproj" />
+    <ProjectReference Include="..\LuaSharp\LuaSharp.csproj" />
   </ItemGroup>
 
   <ItemGroup>

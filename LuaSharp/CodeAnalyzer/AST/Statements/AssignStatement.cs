@@ -4,6 +4,8 @@ namespace LuaSharp.CodeAnalyzer.AST.Statements
 {
     public class AssignStatement : IStatement
     {
+        public string TypeName => nameof(AssignStatement);
+
         public int LastLine { get; set; }
 
         public AssignStatement(int lastLine, List<IExpression> varList, List<IExpression> expressionList)
@@ -16,5 +18,7 @@ namespace LuaSharp.CodeAnalyzer.AST.Statements
         public List<IExpression> VarList { get; set; }
 
         public List<IExpression> ExpressionList { get; set; }
+
+
     }
 }

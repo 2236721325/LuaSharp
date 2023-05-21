@@ -3,6 +3,8 @@
     // 定义 ConcatExpression 类型
     public class ConcatExpression : IExpression
     {
+        public string TypeName => nameof(ConcatExpression);
+
         public int Line { get; set; }
 
         public ConcatExpression(int line, List<IExpression> expressions)
@@ -12,5 +14,6 @@
         }
 
         public List<IExpression> Expressions { get; set; }
+
     }
 }
