@@ -50,6 +50,22 @@ namespace LuaSharp.Test.CodeAnalyzer
             }));
         }
 
+        //括号测试
+        [Theory]
+        [InlineData("local hello=((1+3)*2+10)/3")]
+        public void TestParentheses(string code)
+        {
+            var lexer = new Lexer("main", code);
+            var parser = new Parser(lexer);
+            var block = parser.Parse();
+
+            _Output.WriteLine(JsonConvert.SerializeObject(block, Formatting.Indented, new JsonSerializerSettings()
+            {
+                //ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
+                //PreserveReferencesHandling=PreserveReferencesHandling.Objects
+            }));
+        }
+
     }
 
 }

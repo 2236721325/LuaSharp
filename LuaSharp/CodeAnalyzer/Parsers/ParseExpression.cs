@@ -40,6 +40,19 @@ namespace LuaSharp.CodeAnalyzer.Parsers
         {
             return ParseExpression12();
         }
+        private List<IExpression> ParseExpressions()
+        {
+            var expressionList = new List<IExpression>
+            {
+                ParseExpression()
+            };
+            while (lexer.LookAhead().Kind == TokenKind.TOKEN_SEP_COMMA)
+            {
+                lexer.NextToken();
+                expressionList.Add(ParseExpression());
+            }
+            return expressionList;
+        }
 
 
 
@@ -52,11 +65,12 @@ namespace LuaSharp.CodeAnalyzer.Parsers
             {
                 var or_token = lexer.NextToken();
 
-                exp = new BinopExpression(
+                var exp_or = new BinopExpression(
                     exp, or_token.Kind,
                     ParseExpression11(),
                     or_token.Line
                     );
+                exp = OptimizeLogicalOr(exp_or);
 
             }
             return exp;
@@ -70,11 +84,13 @@ namespace LuaSharp.CodeAnalyzer.Parsers
             {
                 var or_token = lexer.NextToken();
 
-                exp = new BinopExpression(
+                var exp_and = new BinopExpression(
                     exp, or_token.Kind,
                     ParseExpression10(),
                     or_token.Line
                     );
+                exp = OptimizeLogicalAnd(exp_and);
+
             }
             return exp;
         }
@@ -110,7 +126,8 @@ namespace LuaSharp.CodeAnalyzer.Parsers
             while (lexer.LookAhead().Kind == TokenKind.TOKEN_OP_BOR)
             {
                 var op_token = lexer.NextToken();
-                exp = new BinopExpression(exp, op_token.Kind, ParseExpression8(), op_token.Line);
+                var exp_bor = new BinopExpression(exp, op_token.Kind, ParseExpression8(), op_token.Line);
+                exp = OptimizeBitwiseBinaryOp(exp_bor);
             }
             return exp;
         }
@@ -122,7 +139,9 @@ namespace LuaSharp.CodeAnalyzer.Parsers
             while (lexer.LookAhead().Kind == TokenKind.TOKEN_OP_BXOR)
             {
                 var op_token = lexer.NextToken();
-                exp = new BinopExpression(exp, op_token.Kind, ParseExpression7(), op_token.Line);
+                var exp_bxor = new BinopExpression(exp, op_token.Kind, ParseExpression7(), op_token.Line);
+
+                exp = OptimizeBitwiseBinaryOp(exp_bxor);
             }
             return exp;
         }
@@ -135,7 +154,8 @@ namespace LuaSharp.CodeAnalyzer.Parsers
             while (lexer.LookAhead().Kind == TokenKind.TOKEN_OP_BAND)
             {
                 var op_token = lexer.NextToken();
-                exp = new BinopExpression(exp, op_token.Kind, ParseExpression6(), op_token.Line);
+                var exp_band = new BinopExpression(exp, op_token.Kind, ParseExpression6(), op_token.Line);
+                exp = OptimizeBitwiseBinaryOp(exp_band);
             }
             return exp;
         }
@@ -151,7 +171,8 @@ namespace LuaSharp.CodeAnalyzer.Parsers
                     case TokenKind.TOKEN_OP_SHL:
                     case TokenKind.TOKEN_OP_SHR:
                         var op_token = lexer.NextToken();
-                        exp = new BinopExpression(exp, op_token.Kind, ParseExpression5(), op_token.Line);
+                        var exp_shift = new BinopExpression(exp, op_token.Kind, ParseExpression5(), op_token.Line);
+                        exp = OptimizeBitwiseBinaryOp(exp_shift);
                         break;
                     default:
                         return exp;
@@ -191,7 +212,8 @@ namespace LuaSharp.CodeAnalyzer.Parsers
                     case TokenKind.TOKEN_OP_ADD:
                     case TokenKind.TOKEN_OP_SUB:
                         var op_token = lexer.NextToken();
-                        exp = new BinopExpression(exp, op_token.Kind, ParseExpression3(), op_token.Line);
+                        var arith = new BinopExpression(exp, op_token.Kind, ParseExpression3(), op_token.Line);
+                        exp = OptimizeArithBinaryOp(arith);
                         break;
                     default:
                         return exp;
@@ -214,7 +236,9 @@ namespace LuaSharp.CodeAnalyzer.Parsers
                     case TokenKind.TOKEN_OP_IDIV:
 
                         var op_token = lexer.NextToken();
-                        exp = new BinopExpression(exp, op_token.Kind, ParseExpression2(), op_token.Line);
+                        var arith = new BinopExpression(exp, op_token.Kind, ParseExpression2(), op_token.Line);
+                        exp = OptimizeArithBinaryOp(arith);
+
                         break;
                     default:
                         return exp;
@@ -234,11 +258,14 @@ namespace LuaSharp.CodeAnalyzer.Parsers
                 case TokenKind.TOKEN_OP_LEN:
                 case TokenKind.TOKEN_OP_NOT:
                     var op_token = lexer.NextToken();
-                    return new UnopExpression(op_token.Line, op_token.Kind, ParseExpression2());
-
+                    var exp = new UnopExpression(op_token.Line, op_token.Kind, ParseExpression2());
+                    return OptimizeUnaryOp(exp);
             }
             return ParseExpression1();
         }
+
+        // // x ^ y
+        // pow is right associative
         private IExpression ParseExpression1()
         {
             var exp = ParseExpression0();
@@ -418,19 +445,6 @@ namespace LuaSharp.CodeAnalyzer.Parsers
             }
         }
 
-        private List<IExpression> ParseExpressions()
-        {
-            var expressionList = new List<IExpression>
-            {
-                ParseExpression()
-            };
-            while (lexer.LookAhead().Kind == TokenKind.TOKEN_SEP_COMMA)
-            {
-                lexer.NextToken();
-                expressionList.Add(ParseExpression());
-            }
-            return expressionList;
-        }
      
         private List<IExpression> FinishVarList(IExpression var0)
         {

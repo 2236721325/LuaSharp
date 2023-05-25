@@ -227,7 +227,7 @@ namespace LuaSharp.CodeAnalyzer
                     return new Token(TokenKind.TOKEN_IDENTIFIER, Line, value);
                 }
             }
-            throw new SyntaxException("Lexer Error! Unexpected char !", Line);
+            throw new SyntaxException($"Lexer Error! Unexpected char [{Chunk[0]}] !", Line);
 
         }
 
