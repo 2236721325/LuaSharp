@@ -70,6 +70,7 @@ namespace LuaSharp.CodeAnalyzer.Parsers
             return exp;
         }
 
+        //ToDo
         private IExpression OptimizeArithBinaryOp(BinopExpression binop)
         {
             if (binop.Expression1 is IntegerExpression x && binop.Expression2 is IntegerExpression y)

@@ -8,6 +8,7 @@ namespace LuaSharp.CodeAnalyzer.AST.Statements
 
     public interface IStatement
     {
+
         public string TypeName { get; }
     }
 

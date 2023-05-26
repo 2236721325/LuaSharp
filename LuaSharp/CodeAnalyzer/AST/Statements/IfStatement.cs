@@ -6,6 +6,7 @@ namespace LuaSharp.CodeAnalyzer.AST.Statements
 {
 
    
+
     public class IfStatement : IStatement
     {
         public string TypeName => nameof(IfStatement);
